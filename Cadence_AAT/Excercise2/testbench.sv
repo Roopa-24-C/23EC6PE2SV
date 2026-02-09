@@ -1,3 +1,11 @@
+// File        :ATM_tb.sv
+// Author      :Roopashri.C /1BM23EC218
+// Created     :09-02-2026
+// Module      :ATM_tb
+// Project     :SystemVerilog & Verification(23EC6PE2SV)
+// Faculty     :Prof.Ajaykumar Devarapalli
+// Description :This testbench simulates different ATM transaction scenarios to verify correct state transitions.It checks normal operation, wrong PIN, insufficient balance, reset behavior, and repeated transactions.
+
 module ATM_tb(atm_if vif);
 
 initial begin
