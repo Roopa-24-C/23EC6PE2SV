@@ -1,3 +1,12 @@
+// File        :ALU.sv
+// Author      :Roopashri.C /1BM23EC218
+// Created     :09-02-2026
+// Module      :ALU
+// Project     :SystemVerilog & Verification(23EC6PE2SV)
+// Faculty     :Prof.Ajaykumar Devarapalli
+// Description :This ALU module performs arithmetic and logical operations on two 32-bit inputs based on a 2-bit opcode.
+It outputs addition, subtraction, multiplication, or XOR results depending on the selected operation.
+
 module ALU(
     input logic [31:0] a,
     input logic [31:0] b,
