@@ -1,3 +1,10 @@
+// File        :ATM_TOP.sv
+// Author      :Roopashri.C /1BM23EC218
+// Created     :09-02-2026
+// Module      :Top
+// Project     :SystemVerilog & Verification(23EC6PE2SV)
+// Faculty     :Prof.Ajaykumar Devarapalli
+// Description :This top module connects the ATM design and testbench through the interface and generates the clock signal.It acts as the main simulation wrapper to verify ATM functionality.
 module Top;
 
 atm_if vif();
