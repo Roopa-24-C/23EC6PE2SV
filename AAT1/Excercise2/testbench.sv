@@ -12,30 +12,36 @@ module tb;
 
   sec_min_counter dut(clk, rst, sec, min);
 
- 
   always #5 clk = ~clk;
 
- 
+  // Coverage
   covergroup cg @(posedge clk);
+
+    // Seconds rollover
     sec_cp : coverpoint sec {
-      bins wrap = (59 => 0);   // transition bin
+      bins wrap = (59 => 0);
     }
 
-    min_cp : coverpoint min;
+    // Cover all minute values + rollover
+    min_cp : coverpoint min {
+      bins all_vals[] = {[0:59]};
+      bins wrap = (59 => 0);
+    }
+
   endgroup
 
   cg cov = new();
 
-  
   initial begin
     $dumpfile("dump.vcd");
     $dumpvars;
+
     clk = 0;
     rst = 1;
     #10 rst = 0;
 
-    // Run long enough to see rollover
-    repeat (4500) begin
+    // Run long enough for minute rollover
+    repeat (4000) begin
       @(posedge clk);
       cov.sample();
       $display("Time=%0t sec=%0d min=%0d",
