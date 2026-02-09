@@ -5,7 +5,8 @@
 // Project     :SystemVerilog & Verification(23EC6PE2SV)
 // Faculty     :Prof.Ajaykumar Devarapalli
 // Description :Testbench demonstrates generator and driver communicating safely using a mailbox in parallel execution.
-module tb;
+
+  module tb;
 
   mailbox #(Packet) mbx = new();
 
@@ -14,9 +15,21 @@ module tb;
 
   always #5 clk = ~clk;
 
+  // Coverage
+  covergroup mbx_cov @(posedge clk);
+    val_cp : coverpoint data_sig {
+      bins low  = {[0:85]};
+      bins mid  = {[86:170]};
+      bins high = {[171:255]};
+    }
+  endgroup
+
+  mbx_cov cov = new();
+
+  // Generator
   task generator();
     Packet p;
-    repeat (5) begin
+    repeat (10) begin
       p = new();
       p.randomize();
       mbx.put(p);
@@ -24,11 +37,13 @@ module tb;
     end
   endtask
 
+  // Driver
   task driver();
     Packet p;
-    repeat (5) begin
+    repeat (10) begin
       mbx.get(p);
       data_sig = p.val;
+      cov.sample();
       @(posedge clk);
     end
   endtask
@@ -41,6 +56,8 @@ module tb;
       generator();
       driver();
     join
+
+    $display("Coverage = %0.2f %%", cov.get_coverage());
 
     #20 $finish;
   end
