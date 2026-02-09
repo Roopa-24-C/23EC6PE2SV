@@ -1,3 +1,11 @@
+// File        :ATM_Controller.sv
+// Author      :Roopashri.C /1BM23EC218
+// Created     :09-02-2026
+// Module      :ATM
+// Project     :SystemVerilog & Verification(23EC6PE2SV)
+// Faculty     :Prof.Ajaykumar Devarapalli
+// Description :This ATM module uses a finite state machine to control cash withdrawal steps.It checks card insertion, PIN validity, and balance before dispensing cash.
+
 module ATM(
     input logic clk,
     input logic reset,
