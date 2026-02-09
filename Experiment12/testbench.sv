@@ -13,10 +13,8 @@ module tb;
   int wdata;
   int rdata;
 
-  // Clock generation
   always #5 clk = ~clk;
 
-  // DUT
   memory_model dut (
     .clk(clk),
     .wr_en(wr_en),
@@ -26,38 +24,71 @@ module tb;
     .rdata(rdata)
   );
 
+  // Reference memory
+  int ref_mem[int];
+
+  // Coverage
+  covergroup mem_cov @(posedge clk);
+    wr_cp : coverpoint wr_en;
+    rd_cp : coverpoint rd_en;
+  endgroup
+
+  mem_cov cov = new();
+
   initial begin
     $dumpfile("dump.vcd");
     $dumpvars;
+
     wr_en = 0;
     rd_en = 0;
-    addr  = 0;
-    wdata = 0;
 
-    // Write random data
-    repeat (5) begin
+    //---------------- WRITE PHASE ----------------//
+    repeat (10) begin
       @(posedge clk);
       wr_en = 1;
       addr  = $urandom_range(0,100);
       wdata = $urandom_range(0,255);
-      $display("WRITE: addr=%0d data=%0d", addr, wdata);
+
+      ref_mem[addr] = wdata;
+
+      cov.sample();
+
+      $display("WRITE addr=%0d data=%0d", addr, wdata);
     end
 
     @(posedge clk);
     wr_en = 0;
 
-    // Read random addresses
-    repeat (5) begin
+    //---------------- READ PHASE ----------------//
+    repeat (10) begin
       @(posedge clk);
       rd_en = 1;
       addr  = $urandom_range(0,100);
+
+      cov.sample();
+
       @(posedge clk);
-      $display("READ: addr=%0d data=%0d", addr, rdata);
+
+      if (ref_mem.exists(addr) &&
+          rdata == ref_mem[addr])
+        $display("PASS addr=%0d data=%0d",
+                  addr, rdata);
+      else if (!ref_mem.exists(addr) &&
+               rdata == 0)
+        $display("PASS addr=%0d empty", addr);
+      else
+        $display("FAIL addr=%0d expected=%0d got=%0d",
+                  addr,
+                  ref_mem.exists(addr) ? ref_mem[addr] : 0,
+                  rdata);
     end
 
     rd_en = 0;
+
+    $display("Coverage = %0.2f %%", cov.get_coverage());
 
     #10 $finish;
   end
 
 endmodule
+
